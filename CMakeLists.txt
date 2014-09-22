@@ -13,8 +13,10 @@ SET( Robinson_Src
   src/main.cpp
 )
 
+SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-write-strings " )
+
 FIND_PACKAGE( Boost 1.40 COMPONENTS program_options REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
-ADD_EXECUTABLE( robinson main.cpp )
+ADD_EXECUTABLE( robinson ${Robinson_Hdr} ${Robinson_Src} )
 TARGET_LINK_LIBRARIES( robinson ${Boost_LIBRARIES} )
