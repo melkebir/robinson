@@ -53,17 +53,27 @@ int main(int argc, char** argv)
   }
   else if (vm.count("solve"))
   {
-    std::string filename = vm["solve"].as<std::string>();
-    std::ifstream inFile(filename.c_str());
-
-    if (!inFile.good())
-    {
-      std::cerr << "Error: could not open file '"
-                << filename << "' for reading" << std::endl;
-      return 1;
-    }
+    Matrix* pMatrix = NULL;
     
-    Matrix* pMatrix = Matrix::create(inFile);
+    std::string filename = vm["solve"].as<std::string>();
+    if (filename == "-")
+    {
+      pMatrix = Matrix::create(std::cin);
+    }
+    else
+    {
+      std::ifstream inFile(filename.c_str());
+
+      if (!inFile.good())
+      {
+        std::cerr << "Error: could not open file '"
+                  << filename << "' for reading" << std::endl;
+        return 1;
+      }
+      
+      pMatrix = Matrix::create(inFile);
+    }
+
     delete pMatrix;
   }
   
