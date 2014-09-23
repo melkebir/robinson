@@ -23,12 +23,12 @@ SFS::IntVector SFS::solve() const
   
   IntVector sigma_inv = sfs(tau_inv, tau);
 
-  std::cout << "sigma_inv =";
-  for (int i = 0; i < n; ++i)
-  {
-    std::cout << " " << sigma_inv[i];
-  }
-  std::cout << std::endl;
+ // std::cout << "sigma_inv =";
+ // for (int i = 0; i < n; ++i)
+ // {
+ //   std::cout << " " << sigma_inv[i];
+ // }
+ // std::cout << std::endl;
 
   std::reverse(sigma_inv.begin(), sigma_inv.end());
 
@@ -41,12 +41,12 @@ SFS::IntVector SFS::solve() const
 
   IntVector sigma_plus_inv = sfs(sigma_inv, sigma);
 
-  std::cout << "sigma_plus_inv =";
-  for (int i = 0; i < n; ++i)
-  {
-    std::cout << " " << sigma_plus_inv[i];
-  }
-  std::cout << std::endl;
+ // std::cout << "sigma_plus_inv =";
+ // for (int i = 0; i < n; ++i)
+ // {
+ //   std::cout << " " << sigma_plus_inv[i];
+ // }
+ // std::cout << std::endl;
 
   std::reverse(sigma_plus_inv.begin(), sigma_plus_inv.end());
 
@@ -59,12 +59,12 @@ SFS::IntVector SFS::solve() const
 
   IntVector pi_inv = sfs(sigma_plus_inv, sigma_plus);
 
-  std::cout << "pi_inv =";
-  for (int i = 0; i < n; ++i)
-  {
-    std::cout << " " << pi_inv[i];
-  }
-  std::cout << std::endl;
+ // std::cout << "pi_inv =";
+ // for (int i = 0; i < n; ++i)
+ // {
+ //   std::cout << " " << pi_inv[i];
+ // }
+ // std::cout << std::endl;
   
   return pi_inv;
 }
