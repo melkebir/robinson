@@ -74,7 +74,18 @@ int main(int argc, char** argv)
       
       pMatrix = Matrix::create(inFile);
       SFS sfs(*pMatrix);
-      sfs.solve();
+      SFS::IntVector pi_inv = sfs.solve();
+      pMatrix->permute(pi_inv);
+      if (pMatrix->isRobinson())
+      {
+        std::cout << "Matrix is Robinsonian" << std::endl;
+        pMatrix->write(std::cout);
+      }
+      else
+      {
+        std::cout << "Matrix is not Robinsonian" << std::endl;
+        pMatrix->write(std::cout);
+      }
     }
 
     delete pMatrix;

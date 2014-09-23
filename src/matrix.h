@@ -38,7 +38,7 @@ public:
   void shuffle();
   
   bool isSymmetric() const;
-  bool isRobinsonian() const;
+  bool isRobinson() const;
   
   void write(std::ostream& out) const;
   

@@ -60,7 +60,7 @@ Matrix* Matrix::create(int n, int L)
     }
   }
   
-  assert(pMatrix->isRobinsonian());
+  assert(pMatrix->isRobinson());
   
   pMatrix->shuffle();
   
@@ -170,7 +170,7 @@ bool Matrix::isSymmetric() const
   return true;
 }
 
-bool Matrix::isRobinsonian() const
+bool Matrix::isRobinson() const
 {
   if (!isSymmetric())
   {
