@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include "matrix.h"
 
 Matrix* Matrix::create(int n, int L)
