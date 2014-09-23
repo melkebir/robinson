@@ -33,10 +33,11 @@ Matrix* Matrix::create(int n, int L)
   // initialize first row
   for (int j = n - 1; j > 0; --j)
   {
-    int LB = L / n * (n - j);
+//    int LB = L / n * (n - j);
     int UB = L / n * (n - j + 1);
     
-    int val = uniform_dist(LB, UB)(gen);
+//    int val = uniform_dist(LB, UB)(gen);
+    int val = uniform_dist(j < n - 1 ? A[0][j+1] : 0, UB)(gen);
     A[j][0] = A[0][j] = val;
   }
   
@@ -70,6 +71,9 @@ Matrix* Matrix::create(std::istream& in)
 {
   int n = -1;
   in >> n;
+  std::string line;
+  // eat the new line character
+  std::getline(in, line);
   
   if (n <= 0)
   {
@@ -79,7 +83,7 @@ Matrix* Matrix::create(std::istream& in)
   
   Matrix* pMatrix = new Matrix(n);
   
-  std::string line;
+
   for (int i = 0; i < n; ++i)
   {
     if (!in.good())
@@ -107,7 +111,7 @@ Matrix* Matrix::create(std::istream& in)
     }
   }
   
-  if (pMatrix->isSymmetric())
+  if (!pMatrix->isSymmetric())
   {
     std::cerr << "Error: matrix is not symmetric" << std::endl;
     delete pMatrix;

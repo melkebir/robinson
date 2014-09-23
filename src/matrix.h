@@ -41,6 +41,10 @@ public:
   bool isRobinsonian() const;
   
   void write(std::ostream& out) const;
+  
+  int operator()(int i, int j) const { return _A[i][j]; }
+  
+  int n() const { return _n; };
 };
 
 #endif // MATRIX_H
