@@ -6,45 +6,69 @@
  */
 
 #include "sfs.h"
+#include <iostream>
+#include <assert.h>
 
 SFS::IntVector SFS::solve() const
 {
   int n = _A.n();
 
   // construct identity permutation
-  IntVector perm(n, 0);
-  for (int i = 0; i < n; ++i)
-  {
-    perm[i] = i;
-  }
-  
-  return perm;
-}
-
-SFS::IntVector SFS::sfs(const IntVector& tau) const
-{
-  const int n = _A.n();
-  
-  IntVector sigma(n);
-  IntMatrix label(n, IntVector(n, 0));
-  
-  int u = tau[0];
+  IntVector tau(n, 0), tau_inv(n, 0);
   for (int v = 0; v < n; ++v)
   {
-    if (v != u)
+    tau_inv[v] = tau[v] = v;
+  }
+  
+  IntVector sigma_inv = sfs(tau_inv, tau);
+  for (int i = 0; i < n; ++i)
+  {
+    std::cout << " " << sigma_inv[i];
+  }
+  std::cout << std::endl;
+  
+  return tau_inv;
+}
+
+SFS::IntVector SFS::sfs(const IntVector& tau_inv,
+                        const IntVector& tau) const
+{
+  // tau_inv : mapped -> original
+  // tau : original -> mapped
+  const int n = _A.n();
+  
+  IntVector sigma_inv(n, -1);
+  IntMatrix label(n, IntVector(n, 0));
+  BoolVector visited(n, false);
+  
+  int p = tau_inv[0];
+  sigma_inv[0] = p;
+  visited[p] = true;
+  for (int v = 0; v < n; ++v)
+  {
+    if (v != p)
     {
-      label[v][0] = _A(u, v);
+      label[v][0] = _A(p, v);
     }
   }
   
   for (int i = 1; i < n; ++i)
   {
-    int p = pivot(tau, label, visited, i);
+    p = pivot(tau, label, visited, i);
     visited[p] = true;
-    sigma[i] = p;
+    sigma_inv[i] = p;
+    
+    // update labels
+    for (int v = 0; v < n; ++v)
+    {
+      if (!visited[v])
+      {
+        label[v][i] = _A(p, v);
+      }
+    }
   }
   
-  return sigma;
+  return sigma_inv;
 }
 
 int SFS::pivot(const IntVector& tau,
@@ -55,46 +79,46 @@ int SFS::pivot(const IntVector& tau,
   const int n = _A.n();
   int p = -1;
   
-  for (int v = 0; v < n; ++v)
+  IntVector S = slice(tau, label, visited, i-1);
+  int j = i - 2;
+  while (S.size() > 1 && j >= 0)
   {
-    IntVector S = slice(tau, label, visited, i-1);
-    if (S.size() == 1)
+    // determine items to remove from S by finding largest label at j
+    int largest_label = -1;
+    for (int k = 0; k < static_cast<int>(S.size()); ++k)
     {
-      p = S.front();
+      largest_label = std::max(label[S[k]][j], largest_label);
     }
-    else
+    
+    // only retain items in S with largest_label
+    IntVector newS;
+    for (int k = 0; k < static_cast<int>(S.size()); ++k)
     {
-      int j = i - 2;
-      while (S.size() > 1)
+      if (label[S[k]][j] == largest_label)
       {
-        if (j == 0)
-        {
-          // take first according to tau
-          for (int k = 0; k < static_cast<int>(S.size()); ++k)
-          {
-          }
-        }
-        else
-        {
-          // determine items to remove from S by finding largest label at j
-          int largest_label = -1;
-          for (int k = 0; k < static_cast<int>(S.size()); ++k)
-          {
-            largest_label = std::max(label[S[k]][j], largest_label);
-          }
-          
-          // only retain items in S with largest_label
-          IntVector newS;
-          for (int k = 0; k < static_cast<int>(S.size()); ++k)
-          {
-            if (label[S[k]][j] == largest_label)
-            {
-              newS.push_back(S[k]);
-            }
-          }
-          S = newS;
-          --j;
-        }
+        newS.push_back(S[k]);
+      }
+    }
+    S = newS;
+    --j;
+  }
+  
+  if (S.size() == 1)
+  {
+    p = S.front();
+  }
+  else
+  {
+    assert(j == -1);
+    // take first according to tau
+    int m = static_cast<int>(S.size());
+    int smallest_tau = n;
+    for (int k = 0; k < m; ++k)
+    {
+      if (smallest_tau > tau[S[k]])
+      {
+        smallest_tau = tau[S[k]];
+        p = S[k];
       }
     }
   }
@@ -102,22 +126,20 @@ int SFS::pivot(const IntVector& tau,
   return p;
 }
 
-SFS::IntVector SFS::slice(const IntMatrix& label,
+SFS::IntVector SFS::slice(const IntVector& tau,
+                          const IntMatrix& label,
                           const BoolVector& visited,
                           int i) const
 {
   const int n = _A.n();
   
-  // first determine largest label
+  // first determine largest unvisited label
   int largest_label = -1;
   for (int v = 0; v < n; ++v)
   {
     if (!visited[v])
     {
-      if (largest_label < label[v][i])
-      {
-        largest_label = label[v][i];
-      }
+      largest_label = std::max(largest_label, label[v][i]);
     }
   }
   

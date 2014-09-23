@@ -27,8 +27,12 @@ public:
   IntVector solve() const;
   
 protected:
-  IntVector sfs(const IntVector& tau) const;
-  int pivot(const IntMatrix& label,
+  IntVector sfs(const IntVector& tau_inv,
+                const IntVector& tau) const;
+  
+  int pivot(const IntVector& tau,
+            
+            const IntMatrix& label,
             const BoolVector& visited,
             int i) const;
   
