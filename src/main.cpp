@@ -20,8 +20,9 @@ int main(int argc, char** argv)
   desc.add_options()
     ("help,h", "Usage instructions")
     ("max-entry,L", po::value<int>(), "Maximum entry")
-    ("solve,s", po::value<std::string>(), "Robinson similarity recognition")
-    ("generate,g", po::value<int>(), "Generate Robinson matrix");
+    ("solve,s", po::value<std::string>(), "Robinsonian recognition")
+    ("generateR,g", po::value<int>(), "Generate Robinsonian matrix")
+    ("generateNR,n", po::value<int>(), "Generate non-Robinsonian matrix");
 
   po::variables_map vm;
   try
@@ -41,15 +42,26 @@ int main(int argc, char** argv)
     std::cout << desc << "\n";
     return 1;
   }
-  else if (vm.count("generate") && vm.count("max-entry"))
+  else if (vm.count("generateR") && vm.count("max-entry"))
   {
-    int n = vm["generate"].as<int>();
+    int n = vm["generateR"].as<int>();
     int L = vm["max-entry"].as<int>();
     
-    Matrix* pMatrix = Matrix::create(n, L);
+    Matrix* pMatrix = Matrix::createRobinsonian(n, L);
     
     pMatrix->write(std::cout);
 
+    delete pMatrix;
+  }
+  else if (vm.count("generateNR") && vm.count("max-entry"))
+  {
+    int n = vm["generateNR"].as<int>();
+    int L = vm["max-entry"].as<int>();
+    
+    Matrix* pMatrix = Matrix::createNonRobinsonian(n, L);
+    
+    pMatrix->write(std::cout);
+    
     delete pMatrix;
   }
   else if (vm.count("solve"))
@@ -73,19 +85,24 @@ int main(int argc, char** argv)
       }
       
       pMatrix = Matrix::create(inFile);
-      SFS sfs(*pMatrix);
-      SFS::IntVector pi_inv = sfs.solve();
-      pMatrix->permute(pi_inv);
-      if (pMatrix->isRobinson())
-      {
-        std::cout << "Matrix is Robinsonian" << std::endl;
-        pMatrix->write(std::cout);
-      }
-      else
-      {
-        std::cout << "Matrix is not Robinsonian" << std::endl;
-        pMatrix->write(std::cout);
-      }
+    }
+    
+    if (!pMatrix)
+    {
+      return 1;
+    }
+    SFS sfs(*pMatrix);
+    SFS::IntVector pi_inv = sfs.solve();
+    pMatrix->permute(pi_inv);
+    if (pMatrix->isRobinson())
+    {
+      std::cout << "Matrix is Robinsonian" << std::endl;
+      pMatrix->write(std::cout);
+    }
+    else
+    {
+      std::cout << "Matrix is not Robinsonian" << std::endl;
+      pMatrix->write(std::cout);
     }
 
     delete pMatrix;

@@ -12,7 +12,7 @@
 #include <algorithm>
 #include "matrix.h"
 
-Matrix* Matrix::create(int n, int L)
+Matrix* Matrix::createRobinson(int n, int L)
 {
   assert(n > 0);
   Matrix* pMatrix = new Matrix(n);
@@ -21,22 +21,21 @@ Matrix* Matrix::create(int n, int L)
   std::random_device rd;
   std::mt19937 gen(rd());
   typedef std::uniform_int_distribution<int> uniform_dist;
-
+  
   IntMatrix& A = pMatrix->_A;
   
   // initialize diagonal with L
   for (int i = 0; i < n; ++i)
   {
-    A[i][i] = L + 1;
+    A[i][i] = L;
   }
   
   // initialize first row
   for (int j = n - 1; j > 0; --j)
   {
-//    int LB = L / n * (n - j);
-    int UB = L / n * (n - j + 1);
+    int UB = L - j * L / n;
     
-//    int val = uniform_dist(LB, UB)(gen);
+    //    int val = uniform_dist(LB, UB)(gen);
     int val = uniform_dist(j < n - 1 ? A[0][j+1] : 0, UB)(gen);
     A[j][0] = A[0][j] = val;
   }
@@ -45,7 +44,7 @@ Matrix* Matrix::create(int n, int L)
   {
     for (int j = n - 1; j > i; --j)
     {
-      int UB = L;// / n * (n - (j + 1));
+      int UB = L - std::min(n - i - 1, j) * L / n;
       if (j == n - 1)
       {
         int val = uniform_dist(A[i-1][j], UB)(gen);
@@ -61,6 +60,23 @@ Matrix* Matrix::create(int n, int L)
   }
   
   assert(pMatrix->isRobinson());
+  return pMatrix;
+}
+
+Matrix* Matrix::createRobinsonian(int n, int L)
+{
+  Matrix* pMatrix = createRobinson(n, L);
+  assert(pMatrix->isRobinson());
+  
+  pMatrix->shuffle();
+  
+  return pMatrix;
+}
+
+Matrix* Matrix::createNonRobinsonian(int n, int L)
+{
+  Matrix* pMatrix = createRobinson(n, L);
+  pMatrix->_A[0][n - 1] = pMatrix->_A[n - 1][0] = L;
   
   pMatrix->shuffle();
   
@@ -162,6 +178,9 @@ bool Matrix::isSymmetric() const
     {
       if (_A[i][j] != _A[j][i])
       {
+        std::cerr << "A[" << i << "][" << j << "] = "
+                  << _A[i][j] << " != " << "A[" << j << "][" << i
+                  << "] = " << _A[j][i] << std::endl;
         return false;
       }
     }

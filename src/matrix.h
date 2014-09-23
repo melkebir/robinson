@@ -31,7 +31,9 @@ protected:
   IntMatrix _A;
   
 public:
-  static Matrix* create(int n, int L);
+  static Matrix* createRobinsonian(int n, int L);
+  static Matrix* createRobinson(int n, int L);
+  static Matrix* createNonRobinsonian(int n, int L);
   static Matrix* create(std::istream& in);
   
   void permute(const IntVector& perm);
