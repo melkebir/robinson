@@ -29,17 +29,37 @@ public:
 protected:
   IntVector sfs(const IntVector& tau_inv,
                 const IntVector& tau) const;
-  
-  int pivot(const IntVector& tau,
-            
-            const IntMatrix& label,
-            const BoolVector& visited,
-            int i) const;
-  
-  IntVector slice(const IntVector& tau,
-                  const IntMatrix& label,
-                  const BoolVector& visited,
-                  int i) const;
+
+  struct Comparison
+  {
+  private:
+    const IntVector& _currentOrder;
+    const IntVector& _newLabel;
+    
+  public:
+    Comparison(const IntVector& currentOrder,
+               const IntVector& newLabel)
+      : _currentOrder(currentOrder)
+      , _newLabel(newLabel)
+    {
+    }
+    
+    bool operator ()(int a, int b) const
+    {
+      if (_newLabel[a] > _newLabel[b])
+      {
+        return true;
+      }
+      else if (_newLabel[a] < _newLabel[b])
+      {
+        return false;
+      }
+      else
+      {
+        return _currentOrder[a] < _currentOrder[b];
+      }
+    }
+  };
   
 protected:
   const Matrix& _A;
