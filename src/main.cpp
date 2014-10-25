@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     if (pMatrix->isRobinson())
     {
       std::cout << "Matrix is Robinsonian" << std::endl;
-      //pMatrix->write(std::cout);
+      pMatrix->write(std::cout);
     }
     else
     {

@@ -23,12 +23,12 @@ SFS::IntVector SFS::solve() const
   
   IntVector sigma_inv = sfs(tau_inv, tau);
 
- // std::cout << "sigma_inv =";
- // for (int i = 0; i < n; ++i)
- // {
- //   std::cout << " " << sigma_inv[i];
- // }
- // std::cout << std::endl;
+//  std::cout << "sigma_inv =";
+//  for (int i = 0; i < n; ++i)
+//  {
+//    std::cout << " " << sigma_inv[i];
+//  }
+//  std::cout << std::endl;
 
   std::reverse(sigma_inv.begin(), sigma_inv.end());
 
@@ -41,12 +41,12 @@ SFS::IntVector SFS::solve() const
 
   IntVector sigma_plus_inv = sfs(sigma_inv, sigma);
 
- // std::cout << "sigma_plus_inv =";
- // for (int i = 0; i < n; ++i)
- // {
- //   std::cout << " " << sigma_plus_inv[i];
- // }
- // std::cout << std::endl;
+//  std::cout << "sigma_plus_inv =";
+//  for (int i = 0; i < n; ++i)
+//  {
+//    std::cout << " " << sigma_plus_inv[i];
+//  }
+//  std::cout << std::endl;
 
   std::reverse(sigma_plus_inv.begin(), sigma_plus_inv.end());
 
@@ -96,10 +96,11 @@ SFS::IntVector SFS::sfs(const IntVector& tau_inv,
   
   for (int i = 1; i < n; ++i)
   {
+    int m = n - i + 1;
     // update order
-    std::sort(order.begin(), order.begin() + n - i + 1, Comparison(inv_order, label));
+    std::sort(order.begin(), order.begin() + m, Comparison(inv_order, label));
     // update inv_order
-    for (int v = 0; v < n; ++v)
+    for (int v = 0; v < m; ++v)
     {
       inv_order[order[v]] = v;
     }
@@ -107,13 +108,15 @@ SFS::IntVector SFS::sfs(const IntVector& tau_inv,
     p = order[0];
     visited[p] = true;
     sigma_inv[i] = p;
+    label[p] = std::numeric_limits<int>::min();
     
     // update labels
-    for (int v = 0; v < n; ++v)
+    for (int v = 0; v < m; ++v)
     {
-      if (!visited[v])
+      int vv = order[v];
+      if (!visited[vv])
       {
-        label[v] = _A(p, v);
+        label[vv] = _A(p, vv);
       }
     }
   }
