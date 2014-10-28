@@ -1,11 +1,28 @@
-git clone https://seminaro@bitbucket.org/mohammed_el_kebir/robinson.git
-cd robinson
-mkdir build
+Robinsonian similarity
+======================
 
-cd build
-cmake ..
-make
+This package provides an *O(n^2 log n)* time algorithm for recognizing
+whether a matrix is Robinsonian. In case the input matrix is
+Robinsonian, it returns the corresponding permutation.
 
+Dependencies
+------------
+
+* CMake
+* C++ compiler
+
+Build instructions
+------------------
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+Run instructions
+----------------
+
+```
 % help
 ./robinson -h 
 
@@ -18,3 +35,4 @@ make
 ./robinson -s /tmp/matrix.txt
 
 for i in {1..1000};do echo -n "$i ";./robinson -g 100 -L 5000 | ./robinson -s -;done
+```
