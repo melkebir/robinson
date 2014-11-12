@@ -21,6 +21,7 @@ int main(int argc, char** argv)
     ("help,h", "Usage instructions")
     ("max-entry,L", po::value<int>(), "Maximum entry")
     ("solve,s", po::value<std::string>(), "Robinsonian recognition")
+    ("solve_enum_pivot,S", po::value<std::string>(), "Robinsonian recognition (try out all pivots for first sweep)")
     ("generateR,g", po::value<int>(), "Generate Robinsonian matrix")
     ("generateNR,n", po::value<int>(), "Generate non-Robinsonian matrix");
 
@@ -64,11 +65,11 @@ int main(int argc, char** argv)
     
     delete pMatrix;
   }
-  else if (vm.count("solve"))
+  else if (vm.count("solve") || (vm.count("solve_enum_pivot")))
   {
     Matrix* pMatrix = NULL;
     
-    std::string filename = vm["solve"].as<std::string>();
+    std::string filename = vm.count("solve") ? vm["solve"].as<std::string>() : vm["solve_enum_pivot"].as<std::string>();
     if (filename == "-")
     {
       pMatrix = Matrix::create(std::cin);
@@ -92,17 +93,25 @@ int main(int argc, char** argv)
       return 1;
     }
     SFS sfs(*pMatrix);
-    SFS::IntVector pi_inv = sfs.solve();
-    pMatrix->permute(pi_inv);
-    if (pMatrix->isRobinson())
+    
+    if (vm.count("solve"))
     {
-      std::cout << "Matrix is Robinsonian" << std::endl;
-      pMatrix->write(std::cout);
+      SFS::IntVector pi_inv = sfs.solve();
+      pMatrix->permute(pi_inv);
+      if (pMatrix->isRobinson())
+      {
+        std::cout << "Matrix is Robinsonian" << std::endl;
+        pMatrix->write(std::cout);
+      }
+      else
+      {
+        std::cout << "Matrix is NOT Robinsonian" << std::endl;
+        //pMatrix->write(std::cout);
+      }
     }
     else
     {
-      std::cout << "Matrix is NOT Robinsonian" << std::endl;
-      //pMatrix->write(std::cout);
+      sfs.solveEnumPivot();
     }
 
     delete pMatrix;

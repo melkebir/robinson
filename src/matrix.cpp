@@ -247,3 +247,29 @@ void Matrix::write(std::ostream& out) const
     out << std::endl;
   }
 }
+
+bool Matrix::isPermutation(const IntVector& perm)
+{
+  int n = static_cast<int>(perm.size());
+
+  std::vector<bool> occurrence(n, false);
+  for (int i = 0; i < n; ++i)
+  {
+    if (0 <= perm[i] && perm[i] < n)
+    {
+      if (occurrence[perm[i]])
+      {
+        return false;
+      }
+      else
+      {
+        occurrence[perm[i]] = true;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return true;
+}

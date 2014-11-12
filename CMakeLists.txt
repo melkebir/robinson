@@ -13,6 +13,11 @@ SET( Robinson_Src
   src/main.cpp
 )
 
+SET( Perm_Src
+  src/matrix.cpp
+  src/permute.cpp
+)
+
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-write-strings " )
 
 FIND_PACKAGE( Boost 1.40 COMPONENTS program_options REQUIRED )
@@ -20,3 +25,6 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 ADD_EXECUTABLE( robinson ${Robinson_Hdr} ${Robinson_Src} )
 TARGET_LINK_LIBRARIES( robinson ${Boost_LIBRARIES} )
+
+ADD_EXECUTABLE( permute ${Perm_Src} )
+TARGET_LINK_LIBRARIES( permute )

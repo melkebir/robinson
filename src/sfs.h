@@ -25,10 +25,14 @@ public:
   }
   
   IntVector solve() const;
+  IntVector solveEnumPivot() const;
   
 protected:
   IntVector sfs(const IntVector& tau_inv,
                 const IntVector& tau) const;
+  
+  IntVector solve(const IntVector& tau_inv,
+                  const IntVector& tau) const;
 
   struct Comparison
   {

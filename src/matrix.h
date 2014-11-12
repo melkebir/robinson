@@ -36,6 +36,8 @@ public:
   static Matrix* createNonRobinsonian(int n, int L);
   static Matrix* create(std::istream& in);
   
+  static bool isPermutation(const IntVector& perm);
+  
   void permute(const IntVector& perm);
   void shuffle();
   

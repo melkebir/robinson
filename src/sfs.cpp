@@ -13,7 +13,7 @@
 SFS::IntVector SFS::solve() const
 {
   int n = _A.n();
-
+  
   // construct identity permutation
   IntVector tau(n, 0), tau_inv(n, 0);
   for (int v = 0; v < n; ++v)
@@ -21,14 +21,60 @@ SFS::IntVector SFS::solve() const
     tau_inv[v] = tau[v] = v;
   }
   
-  IntVector sigma_inv = sfs(tau_inv, tau);
+  return solve(tau_inv, tau);
+}
 
-//  std::cout << "sigma_inv =";
-//  for (int i = 0; i < n; ++i)
-//  {
-//    std::cout << " " << sigma_inv[i];
-//  }
-//  std::cout << std::endl;
+SFS::IntVector SFS::solveEnumPivot() const
+{
+  int n = _A.n();
+
+  for (int v = 0; v < n; ++v)
+  {
+    IntVector tau_inv, tau(n, 0);
+    tau_inv.push_back(v);
+    for (int vv = 0; vv < n; ++vv)
+    {
+      if (v != vv)
+        tau_inv.push_back(vv);
+    }
+    
+    // construct tau
+    for (int vv = 0; vv < n; ++vv)
+    {
+      tau[tau_inv[vv]] = vv;
+    }
+    
+    IntVector res_perm_inv = solve(tau_inv, tau);
+    Matrix B = _A;
+    B.permute(res_perm_inv);
+    std::cout << (B.isRobinson() ? "Robinson" : "NOT Robinson") << std::endl;
+  }
+  
+  return IntVector();
+}
+
+SFS::IntVector SFS::solve(const IntVector& tau_inv,
+                          const IntVector& tau) const
+{
+  int n = _A.n();
+
+  assert(Matrix::isPermutation(tau_inv));
+  std::cout << "tau_inv =";
+  for (int i = 0; i < n; ++i)
+  {
+    std::cout << " " << tau_inv[i];
+  }
+  std::cout << std::endl;
+  
+  IntVector sigma_inv = sfs(tau_inv, tau);
+  assert(Matrix::isPermutation(sigma_inv));
+
+  std::cout << "sigma_inv =";
+  for (int i = 0; i < n; ++i)
+  {
+    std::cout << " " << sigma_inv[i];
+  }
+  std::cout << std::endl;
 
   std::reverse(sigma_inv.begin(), sigma_inv.end());
 
@@ -40,13 +86,14 @@ SFS::IntVector SFS::solve() const
   }
 
   IntVector sigma_plus_inv = sfs(sigma_inv, sigma);
-
-//  std::cout << "sigma_plus_inv =";
-//  for (int i = 0; i < n; ++i)
-//  {
-//    std::cout << " " << sigma_plus_inv[i];
-//  }
-//  std::cout << std::endl;
+  assert(Matrix::isPermutation(sigma_plus_inv));
+  
+  std::cout << "sigma_plus_inv =";
+  for (int i = 0; i < n; ++i)
+  {
+    std::cout << " " << sigma_plus_inv[i];
+  }
+  std::cout << std::endl;
 
   std::reverse(sigma_plus_inv.begin(), sigma_plus_inv.end());
 
@@ -58,13 +105,14 @@ SFS::IntVector SFS::solve() const
   }
 
   IntVector pi_inv = sfs(sigma_plus_inv, sigma_plus);
+  assert(Matrix::isPermutation(pi_inv));
 
-//  std::cout << "pi_inv =";
-//  for (int i = 0; i < n; ++i)
-//  {
-//    std::cout << " " << pi_inv[i];
-//  }
-//  std::cout << std::endl;
+  std::cout << "pi_inv =";
+  for (int i = 0; i < n; ++i)
+  {
+    std::cout << " " << pi_inv[i];
+  }
+  std::cout << std::endl;
   
   return pi_inv;
 }
@@ -86,6 +134,7 @@ SFS::IntVector SFS::sfs(const IntVector& tau_inv,
   int p = tau_inv[0];
   sigma_inv[0] = p;
   visited[p] = true;
+  label[p] = std::numeric_limits<int>::min();
   for (int v = 0; v < n; ++v)
   {
     if (v != p)
