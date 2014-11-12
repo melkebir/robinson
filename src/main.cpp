@@ -111,6 +111,7 @@ int main(int argc, char** argv)
     }
     else
     {
+      pMatrix->write(std::cout);
       sfs.solveEnumPivot();
     }
 
