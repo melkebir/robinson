@@ -39,18 +39,29 @@ protected:
   private:
     const IntVector& _currentOrder;
     const IntVector& _newLabel;
+    const BoolVector& _currentSlice;
     
   public:
     Comparison(const IntVector& currentOrder,
-               const IntVector& newLabel)
+               const IntVector& newLabel,
+               const BoolVector& currentSlice)
       : _currentOrder(currentOrder)
       , _newLabel(newLabel)
+      , _currentSlice(currentSlice)
     {
     }
     
     bool operator ()(int a, int b) const
     {
-      if (_newLabel[a] > _newLabel[b])
+      if (_currentSlice[a] && !_currentSlice[b])
+      {
+        return true;
+      }
+      else if (!_currentSlice[a] && _currentSlice[b])
+      {
+        return false;
+      }
+      else if (_newLabel[a] > _newLabel[b])
       {
         return true;
       }

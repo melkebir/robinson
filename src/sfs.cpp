@@ -138,23 +138,33 @@ SFS::IntVector SFS::sfs(const IntVector& tau_inv,
   for (int v = 0; v < n; ++v)
   {
     if (v != p)
-    {
       label[v] = _A(p, v);
-    }
   }
   
+  BoolVector currentSlice(n, false);
+  int sliceSize = 0;
   for (int i = 1; i < n; ++i)
   {
     int m = n - i + 1;
     // update order
-    std::sort(order.begin(), order.begin() + m, Comparison(inv_order, label));
+    std::sort(order.begin(), order.begin() + m, Comparison(inv_order, label, currentSlice));
     // update inv_order
     for (int v = 0; v < m; ++v)
     {
       inv_order[order[v]] = v;
     }
     
-    p = order[0];
+    if (sliceSize == 0)
+    {
+      for (int v = 0;
+           v < m && label[order[v]] == label[order[0]];
+           ++v, ++sliceSize)
+      {
+        currentSlice[order[v]] = true;
+      }
+    }
+    
+    int p = order[0];
     visited[p] = true;
     sigma_inv[i] = p;
     label[p] = std::numeric_limits<int>::min();
@@ -168,6 +178,9 @@ SFS::IntVector SFS::sfs(const IntVector& tau_inv,
         label[vv] = _A(p, vv);
       }
     }
+    
+    --sliceSize;
+    currentSlice[p] = false;
   }
   
   return sigma_inv;
